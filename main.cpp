@@ -388,14 +388,13 @@ void jacobi(float ** A, float * B, int m, int n, float *x, float eps, int maxit)
 int main(){
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// Set up the size of the matrix to be solved
-	cout<<CLOCKS_PER_SEC<<endl;
-	int n = 100;
+	//cout<<CLOCKS_PER_SEC<<endl;
+	//int n = 1;
 	int N;
 	//printf("Enter the rank of the matrix:\n");
 	//scanf("%d",&n);
-	N = 1000;
-	//N = 150;
-	//N = 100;
+	N = 90;
+	
 	
 	int i;
 	//init matrix
