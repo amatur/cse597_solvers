@@ -393,6 +393,12 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 	// now solving
 	
 	//Ly = B
+	
+	clock_t lu_st, lu_et, lu_t;
+    
+    
+    lu_st = clock();
+	
 	for (int i = 0; i < N; i++) {
 		x[i] = B[i];
 		
@@ -402,6 +408,14 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 			
 	}
 	
+	lu_et = clock();
+	lu_t = (double)(lu_et - lu_st);
+	printf("Total ticks taken by CPU for Forward Substitution: %ld\n", lu_t );
+	
+	
+	lu_st = clock();
+	
+
 	//Ux = y
 	for (int i = N - 1; i >= 0; i--) {
 		for (int k = i + 1; k < N; k++){
@@ -411,6 +425,11 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 		x[i] = x[i] / A[i][i];
 	}
 	
+	
+	lu_et = clock();
+	lu_t = (double)(lu_et - lu_st);
+	printf("Total ticks taken by CPU for Backward Substitution: %ld\n", lu_t );
+	
 
 }
 
@@ -419,16 +438,15 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 int main(){
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// Set up the size of the matrix to be solved
-	int n;
+	int n = 5;
 	int N;
-	printf("Enter the rank of the matrix:\n");
-	scanf("%d",&n);
+	//printf("Enter the rank of the matrix:\n");
+	//scanf("%d",&n);
 	N = n * n;
 	//N = 150;
 	//N = 100;
 	
-	int i, j;
-	
+	int i;
 	//init matrix
 	
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
@@ -501,14 +519,14 @@ for (int i = n; i < N-1; i=i+n) {
         A[i][j+1] = 0;
 	}
 }
-	print(A, N, N);
+	//print(A, N, N);
 	
 	
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// fill up B matrix 
 	//loadMatrix(B, N, "mat.txt");
 	
-	for(i =0; i<N; i++)
+	for(int i =0; i<N; i++)
     {
         B[i] = (float)rand()/(float)(RAND_MAX)*1.0;
         B2[i] = B[i];
@@ -536,7 +554,7 @@ for (int i = n; i < N-1; i=i+n) {
 	
 	
 	
-	clock_t jacobi_start_t, jacobi_end_t, jacobi_t, jacobi2_start_t, jacobi2_end_t, jacobi2_t, lu_st, lu_et, lu_t;
+	clock_t jacobi_start_t, jacobi_end_t, jacobi_t, lu_st, lu_et, lu_t;
     
     
     lu_st = clock();
@@ -555,7 +573,7 @@ for (int i = n; i < N-1; i=i+n) {
 	
 	printf("Total ticks taken by CPU for LU Decomposition: %ld\n", lu_t );
 	
-	print(X, N);
+	//print(X, N);
 	
 	
 	
@@ -564,7 +582,7 @@ for (int i = n; i < N-1; i=i+n) {
 	
     
     //~ jacobi_start_t = clock();
-    //~ int cnt;
+    //~ x
 	//~ jacobi(A, B, N, N, X, eps, maxit);
 	//~ jacobi_end_t = clock();
 	//~ jacobi_t = (double)(jacobi_end_t - jacobi_start_t);
@@ -579,14 +597,15 @@ for (int i = n; i < N-1; i=i+n) {
     
     jacobi_start_t = clock();
 
-    //jacobiPoisson(N, A, B, eps, maxit, &cnt, X);
-	
+	int cnt;
+    jacobiSolve(N, A, B, eps, maxit, &cnt, X);
+	//jacobi(A, B, N, N, X, eps, maxit);
 	jacobi_end_t = clock();
 	jacobi_t = (double)(jacobi_end_t - jacobi_start_t);
 	
 	printf("Total ticks taken by CPU for Jacobi: %ld\n", jacobi_t );
 	
-	print(X, N);
+	//print(X, N);
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	
 	
