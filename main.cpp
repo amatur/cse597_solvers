@@ -102,12 +102,147 @@ float getError(float **A, float* B, float *C, float *x, int Dim){
 
 
 
+void swapRows(float** mat, int row1, int row2){
+	float * tmp = mat[row1];
+	mat[row1] = mat[row2];
+	mat[row2] = tmp;
+}
+void swapRows(float* mat, int row1, int row2){
+	float tmp = mat[row1];
+	mat[row1] = mat[row2];
+	mat[row2] = tmp;
+}
+
+void LUSolver(float ** A, float *B, int N, int eps, float *x){
+	clock_t lu_st, lu_et, lu_t;
+	
+	
+	//init L
+	//change A to U
+	
+	lu_st = clock();
+	float **L = (float **)calloc( N, sizeof(float *));
+	
+	for(int i = 0; i < N; i++ )
+	{
+		L[i] = (float *)calloc( N, sizeof(float));
+		L[i][i] = 1;
+	}
+	
+	int k = 0; /* Initialization of the pivot column */
+	
+	for(k = 0; k < N; k++){
+		/* Find the k-th pivot: */
+		int i_max = k;
+		
+		// find the largest element of this column, iterate through all row
+		for(int i = k; i<N; i++){
+			if(fabs(A[i][k]) > fabs(A[i_max][k])){
+				i_max = i;
+			}
+		}
+		if (fabs(A[i_max][k]) < eps) return; //fail
+		//if (A[i_max][k] == 0){
+			// all zero in this column, so go to next column
+		//	k = k + 1;
+		if (fabs(A[i_max][k]) != k){
+			swapRows(A, k, i_max);
+			swapRows(B, k, i_max);
+			//int tmp = P[h];
+			//P[h] = P[i_max];
+			//P[i_max] = tmp;
+			
+			//P[m]++;
+			// for all below pivot
+			
+		}
+		for (int i = k + 1; i<N; i++){
+			float f = A[i][k] / A[k][k];
+			L[i][k] = f;
+			A[i][k] = f;
+			
+			
+			for (int j = k + 1; j < N ; j++){
+				A[i][j] = A[i][j] - A[k][j] * f;
+			}
+		}
+		
+		
+	}
+	
+	lu_et = clock();
+	lu_t = (double)(lu_et - lu_st);
+	printf("Total ticks taken by CPU for LU Decomposition Only: %ld\n", lu_t );
+	
+	for (int i=0; i<N; i++) {
+		for (int j=0; j<i; j++) {
+			A[i][j] = L[i][j];
+		}
+	}
+	
+	
+	//print(L, N, N);
+	//decomposition up to this part
+	
+	// now solving
+	
+	//Ly = B
+	
+	
+    
+    
+    lu_st = clock();
+	
+	for (int i = 0; i < N; i++) {
+		x[i] = B[i];
+		
+		for (int k = 0; k < i; k++){
+			x[i] -= L[i][k] * x[k];
+		}
+			
+	}
+	
+	lu_et = clock();
+	lu_t = (double)(lu_et - lu_st);
+	printf("Total ticks taken by CPU for Forward Substitution: %ld\n", lu_t );
+	
+	
+	lu_st = clock();
+	
+
+	//Ux = y
+	for (int i = N - 1; i >= 0; i--) {
+		for (int k = i + 1; k < N; k++){
+			x[i] -= A[i][k] * x[k];
+		}
+		
+		x[i] = x[i] / A[i][i];
+	}
+	
+	
+	lu_et = clock();
+	lu_t = (double)(lu_et - lu_st);
+	printf("Total ticks taken by CPU for Backward Substitution: %ld\n", lu_t );
+	
+
+}
+
+
+
 void jacobiSolve ( int n, float **A, float *b, float epsilon, int maxit, int *numit, float *x )
 {
     float *dx,*y;
     dx = (float*) calloc(n,sizeof(float));
     y = (float*) calloc(n,sizeof(float));
     int i,j,k;
+
+	//random
+	for(int j=0; j<n; j++)
+	{
+		x[j] = (float)rand()/(float)(RAND_MAX)*1.0;
+     }
+	//LUSolver(A, b, n, epsilon, x);
+	
 
     // Note that we go through to our max iterations
     for(k=0; k<maxit; k++)
@@ -146,7 +281,7 @@ void jacobiSolve ( int n, float **A, float *b, float epsilon, int maxit, int *nu
         for(i=0; i<n; i++) x[i] = y[i];
         
         // Print the residuals to the screen
-        //printf("%4d : %.3e %.3e %.3e \n",k,totSum,localSum,localInd);
+        printf("%4d\t%.3e\t%.3e\t%.3e \n",k,totSum,localSum,localInd);
 
         // Break out if we reach our desired tolerance
         if(totSum <= epsilon) break;
@@ -208,6 +343,9 @@ void jacobiSolve ( int n, float **A, float *b, float epsilon, int maxit, int *nu
 //~ }
 
 
+
+
+
 void jacobi(float ** A, float * B, int m, int n, float *x, float eps, int maxit){
 	memset(x, 0, n*sizeof(*x)); //init guess
 	float* sigma = (float*) calloc(n,sizeof(float));
@@ -246,203 +384,16 @@ void jacobi(float ** A, float * B, int m, int n, float *x, float eps, int maxit)
 
 
 
-int LUPDecompose(float **A, int N, float Tol, int *P) {
-	
-	int i, j, k, imax;
-	float maxA, *ptr, absA;
-	
-	for (i = 0; i <= N; i++)
-		P[i] = i; //Unit permutation matrix, P[N] initialized with N
-	
-	for (i = 0; i < N; i++) {
-		maxA = 0.0;
-		imax = i;
-		
-		for (k = i; k < N; k++)
-			if ((absA = fabs(A[k][i])) > maxA) {
-				maxA = absA;
-				imax = k;
-			}
-		
-		if (maxA < Tol) return 0; //failure, matrix is degenerate
-		
-		if (imax != i) {
-			//pivoting P
-			j = P[i];
-			P[i] = P[imax];
-			P[imax] = j;
-			
-			//pivoting rows of A
-			ptr = A[i];
-			A[i] = A[imax];
-			A[imax] = ptr;
-			
-			//counting pivots starting from N (for determinant)
-			P[N]++;
-		}
-		
-		for (j = i + 1; j < N; j++) {
-			A[j][i] /= A[i][i];
-			
-			for (k = i + 1; k < N; k++)
-				A[j][k] -= A[j][i] * A[i][k];
-		}
-	}
-	
-	return 1;  //decomposition done
-}
-
-/* INPUT: A,P filled in LUPDecompose; b - rhs vector; N - dimension
- * OUTPUT: x - solution vector of A*x=b
- */
- 
-void LUPSolve(float **A, int *P, float *b, int N, float *x) {
-	
-	for (int i = 0; i < N; i++) {
-		x[i] = b[P[i]];
-		
-		for (int k = 0; k < i; k++)
-			x[i] -= A[i][k] * x[k];
-	}
-	
-	for (int i = N - 1; i >= 0; i--) {
-		for (int k = i + 1; k < N; k++)
-			x[i] -= A[i][k] * x[k];
-		
-		x[i] = x[i] / A[i][i];
-	}
-}
-
-
-
-
-void swapRows(float** mat, int row1, int row2){
-	float * tmp = mat[row1];
-	mat[row1] = mat[row2];
-	mat[row2] = tmp;
-}
-void swapRows(float* mat, int row1, int row2){
-	float tmp = mat[row1];
-	mat[row1] = mat[row2];
-	mat[row2] = tmp;
-}
-
-void LUSolver(float ** A, float *B, int N, int eps, float *x){
-
-	//init L
-	//change A to U
-	float **L = (float **)calloc( N, sizeof(float *));
-	
-	for(int i = 0; i < N; i++ )
-	{
-		L[i] = (float *)calloc( N, sizeof(float));
-		L[i][i] = 1;
-	}
-	
-	int k = 0; /* Initialization of the pivot column */
-	
-	for(k = 0; k < N; k++){
-		/* Find the k-th pivot: */
-		int i_max = k;
-		
-		// find the largest element of this column, iterate through all row
-		for(int i = k; i<N; i++){
-			if(fabs(A[i][k]) > fabs(A[i_max][k])){
-				i_max = i;
-			}
-		}
-		if (fabs(A[i_max][k]) < eps) return; //fail
-		//if (A[i_max][k] == 0){
-			// all zero in this column, so go to next column
-		//	k = k + 1;
-		if (fabs(A[i_max][k]) != k){
-			swapRows(A, k, i_max);
-			swapRows(B, k, i_max);
-			//int tmp = P[h];
-			//P[h] = P[i_max];
-			//P[i_max] = tmp;
-			
-			//P[m]++;
-			// for all below pivot
-			
-		}
-		for (int i = k + 1; i<N; i++){
-			float f = A[i][k] / A[k][k];
-			L[i][k] = f;
-			A[i][k] = f;
-			
-			
-			for (int j = k + 1; j < N ; j++){
-				A[i][j] = A[i][j] - A[k][j] * f;
-			}
-		}
-		
-		
-	}
-	
-	for (int i=0; i<N; i++) {
-		for (int j=0; j<i; j++) {
-			A[i][j] = L[i][j];
-		}
-	}
-	
-	
-	//print(L, N, N);
-	//decomposition up to this part
-	
-	// now solving
-	
-	//Ly = B
-	
-	clock_t lu_st, lu_et, lu_t;
-    
-    
-    lu_st = clock();
-	
-	for (int i = 0; i < N; i++) {
-		x[i] = B[i];
-		
-		for (int k = 0; k < i; k++){
-			x[i] -= L[i][k] * x[k];
-		}
-			
-	}
-	
-	lu_et = clock();
-	lu_t = (double)(lu_et - lu_st);
-	printf("Total ticks taken by CPU for Forward Substitution: %ld\n", lu_t );
-	
-	
-	lu_st = clock();
-	
-
-	//Ux = y
-	for (int i = N - 1; i >= 0; i--) {
-		for (int k = i + 1; k < N; k++){
-			x[i] -= A[i][k] * x[k];
-		}
-		
-		x[i] = x[i] / A[i][i];
-	}
-	
-	
-	lu_et = clock();
-	lu_t = (double)(lu_et - lu_st);
-	printf("Total ticks taken by CPU for Backward Substitution: %ld\n", lu_t );
-	
-
-}
-
-
 
 int main(){
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// Set up the size of the matrix to be solved
-	int n = 5;
+	cout<<CLOCKS_PER_SEC<<endl;
+	int n = 100;
 	int N;
 	//printf("Enter the rank of the matrix:\n");
 	//scanf("%d",&n);
-	N = n * n;
+	N = 1000;
 	//N = 150;
 	//N = 100;
 	
@@ -483,42 +434,42 @@ int main(){
 	   
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// fill up A matrix - Poisson finite diff
-	//~ for (i = 0; i < N; i++) {
-		//~ for (j = 0; j < N; j++) {
-			//~ if (i == j){
-				//~ A[i][j] = 4;
-			//~ }else if (abs(i-j) == 1){
-				//~ A[i][j] = -1;
-			//~ }
-		//~ }
-	//~ }
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (i == j){
+				A[i][j] = 4;
+			}else if (abs(i-j) == 1){
+				A[i][j] = -1;
+			}
+		}
+	}
 	
 
 
-for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
-    if (i == j){
-        A[i][j] = 4;
-    }else if (i == j+1){
-        A[i][j] = -1;
-	}else if (i == j-1){
-        A[i][j]= -1;
-	}
-    else if (i == j+n){
-        A[i][j] = -1;
-	}
-    else if (i == j-n){
-        A[i][j] = -1;
-	}
-   }
-}
+//~ for (int i = 0; i < N; i++) {
+		//~ for (int j = 0; j < N; j++) {
+    //~ if (i == j){
+        //~ A[i][j] = 4;
+    //~ }else if (i == j+1){
+        //~ A[i][j] = -1;
+	//~ }else if (i == j-1){
+        //~ A[i][j]= -1;
+	//~ }
+    //~ else if (i == j+n){
+        //~ A[i][j] = -1;
+	//~ }
+    //~ else if (i == j-n){
+        //~ A[i][j] = -1;
+	//~ }
+   //~ }
+//~ }
 
-for (int i = n; i < N-1; i=i+n) {
-		for (int j = n; j < N-1; j=j+n) {
-        A[i+1][j] = 0;
-        A[i][j+1] = 0;
-	}
-}
+//~ for (int i = n; i < N-1; i=i+n) {
+		//~ for (int j = n; j < N-1; j=j+n) {
+        //~ A[i+1][j] = 0;
+        //~ A[i][j+1] = 0;
+	//~ }
+//~ }
 	//print(A, N, N);
 	
 	
