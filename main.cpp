@@ -1,4 +1,3 @@
-//
 //  jacobiSolver.cpp
 //  cse597
 //
@@ -7,6 +6,8 @@
 //
 
 #include <stdio.h>
+#include<cstdlib>
+#include <cstring>
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -153,6 +154,58 @@ void jacobiSolve ( int n, float **A, float *b, float epsilon, int maxit, int *nu
     *numit = k+1;
     free(dx); free(y);
 }
+
+
+
+
+//~ void jacobiPoisson ( int n, float **A, float *b, float epsilon, int maxit, int *numit, float *x )
+//~ {
+    //~ float *dx,*y;
+    //~ dx = (float*) calloc(n,sizeof(float));
+    //~ y = (float*) calloc(n,sizeof(float));
+    //~ int i,j,k;
+    
+    //~ float ** U = (float**) calloc(n,sizeof(float *));
+	//~ for (int i = 0; i< n; i++){
+		//~ U[i] =(float*) calloc(n,sizeof(float));
+	//~ }
+    //~ // Note that we go through to our max iterations
+    //~ for(k=0; k<maxit; k++)
+    //~ {
+        //~ float totSum = 0.0;
+        //~ float localSum = 0.0;
+        //~ float localInd = 0.0;
+        //~ for(i=0; i<n; i++)
+        //~ {
+            //~ //dx[i] = b[i];
+            //~ for(j=0; j<n; j++)
+            //~ {
+				//~ if(i-1 >=0 && i+1 < n && j-1>=0 && j+1 < n){
+				  //~ U[i][j] =  ( U[i-1][j] + U[i+1][j] + U[i][j-1] + U[i][j+1] + b[i*n + j] )/4;
+			  //~ }
+               //~ // dx[i] -= A[i][j]*x[j]; 
+            //~ }
+            //~ //dx[i] /= A[i][i];
+            //~ //y[i] += dx[i];
+            
+            
+          
+
+        //~ }
+       
+
+        //~ // Break out if we reach our desired tolerance
+        //~ //if(totSum <= epsilon) break;
+    //~ }
+    //~ int t = 0;
+    //~ for(int i=0; i<n; i++) {
+			//~ for(j=0; j<n; j++) {
+				//~ x[t++] = U[i][j]; 
+			//~ }
+		//~ }
+    //~ //*numit = k+1;
+    //~ //free(dx); free(y);
+//~ }
 
 
 void jacobi(float ** A, float * B, int m, int n, float *x, float eps, int maxit){
@@ -366,11 +419,13 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 int main(){
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// Set up the size of the matrix to be solved
+	int n;
 	int N;
 	printf("Enter the rank of the matrix:\n");
-	//scanf("%d",&N);
+	scanf("%d",&n);
+	N = n * n;
 	//N = 150;
-	N = 1000;
+	//N = 100;
 	
 	int i, j;
 	
@@ -378,8 +433,8 @@ int main(){
 	
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// Set up the Ax=b and random variables
-	float **A;
-	float *B;
+	float **A, **A2;
+	float *B, *B2;
 	float *X;
 	srand(0);
 
@@ -387,11 +442,15 @@ int main(){
 	// Allocate memory for A matrix 
 	
 	A = (float**) calloc(N,sizeof(float*));
+	A2 = (float**) calloc(N,sizeof(float*));
     for(i =0; i <N; i++){
 		A[i] = (float*) calloc(N,sizeof(float));
-		B = (float*) calloc(N,sizeof(float));
-		X = (float*) calloc(N,sizeof(float));
+		A2[i] = (float*) calloc(N,sizeof(float));
+		
 	}
+	B = (float*) calloc(N,sizeof(float));
+	B2 = (float*) calloc(N,sizeof(float));
+	X = (float*) calloc(N,sizeof(float));
         
     // Randomly Initialize the A matrix
 	//~ int countA,countB;
@@ -406,25 +465,55 @@ int main(){
 	   
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// fill up A matrix - Poisson finite diff
-	for (i = 0; i < N; i++) {
-		for (j = 0; j < N; j++) {
-			if (i == j){
-				A[i][j] = -4;
-			}else if (abs(i-j) == 1){
-				A[i][j] = 1;
-			}
-		}
+	//~ for (i = 0; i < N; i++) {
+		//~ for (j = 0; j < N; j++) {
+			//~ if (i == j){
+				//~ A[i][j] = 4;
+			//~ }else if (abs(i-j) == 1){
+				//~ A[i][j] = -1;
+			//~ }
+		//~ }
+	//~ }
+	
+
+
+for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+    if (i == j){
+        A[i][j] = 4;
+    }else if (i == j+1){
+        A[i][j] = -1;
+	}else if (i == j-1){
+        A[i][j]= -1;
 	}
+    else if (i == j+n){
+        A[i][j] = -1;
+	}
+    else if (i == j-n){
+        A[i][j] = -1;
+	}
+   }
+}
+
+for (int i = n; i < N-1; i=i+n) {
+		for (int j = n; j < N-1; j=j+n) {
+        A[i+1][j] = 0;
+        A[i][j+1] = 0;
+	}
+}
+	print(A, N, N);
+	
 	
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// fill up B matrix 
-	loadMatrix(B, N, "mat.txt");
+	//loadMatrix(B, N, "mat.txt");
 	
-	/*for(i =0; i<N; i++)
+	for(i =0; i<N; i++)
     {
         B[i] = (float)rand()/(float)(RAND_MAX)*1.0;
+        B2[i] = B[i];
     }
-	*/
+	
 	
 	
 	// fill up B matrix
@@ -447,24 +536,10 @@ int main(){
 	
 	
 	
-	clock_t jacobi_start_t, jacobi_end_t, jacobi_t, lu_st, lu_et, lu_t;
+	clock_t jacobi_start_t, jacobi_end_t, jacobi_t, jacobi2_start_t, jacobi2_end_t, jacobi2_t, lu_st, lu_et, lu_t;
     
-    jacobi_start_t = clock();
-    int cnt;
-	jacobiSolve(N, A, B, eps, maxit, &cnt, X);
     
-	//jacobi(A, B, N, N, X, eps, maxit);
-	jacobi_end_t = clock();
-	jacobi_t = (double)(jacobi_end_t - jacobi_start_t);
-	
-	printf("Total ticks taken by CPU for Jacobi: %ld\n", jacobi_t );
-	
-	//print(X, N);
-	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
-	
-	
-	
-	lu_st = clock();
+    lu_st = clock();
 	
 	
 	LUSolver(A, B, N, eps, X);
@@ -480,8 +555,43 @@ int main(){
 	
 	printf("Total ticks taken by CPU for LU Decomposition: %ld\n", lu_t );
 	
-	//print(X, N);
+	print(X, N);
+	
+	
+	
+	
+	
+	
+    
+    //~ jacobi_start_t = clock();
+    //~ int cnt;
+	//~ jacobi(A, B, N, N, X, eps, maxit);
+	//~ jacobi_end_t = clock();
+	//~ jacobi_t = (double)(jacobi_end_t - jacobi_start_t);
+	
+	//~ printf("Total ticks taken by CPU for Jacobi Poisson: %ld\n", jacobi_t );
+	
+	//~ print(X, N);
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
+	
+	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
+	
+    
+    jacobi_start_t = clock();
+
+    //jacobiPoisson(N, A, B, eps, maxit, &cnt, X);
+	
+	jacobi_end_t = clock();
+	jacobi_t = (double)(jacobi_end_t - jacobi_start_t);
+	
+	printf("Total ticks taken by CPU for Jacobi: %ld\n", jacobi_t );
+	
+	print(X, N);
+	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
+	
+	
+	
+	
 	
 	
 	
