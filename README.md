@@ -31,11 +31,11 @@ make
 ./main.out
 
 # This should output
-Total ticks taken by CPU for LU Decomposition Only: 108
-Total ticks taken by CPU for Forward Substitution: 4
-Total ticks taken by CPU for Backward Substitution: 6
-Total ticks taken by CPU for LU Decomposition: 170
-Total ticks taken by CPU for Jacobi: 113
+Total ticks taken by CPU for LU Decomposition Only: 108   
+Total ticks taken by CPU for Forward Substitution: 4   
+Total ticks taken by CPU for Backward Substitution: 6   
+Total ticks taken by CPU for LU Decomposition: 170   
+Total ticks taken by CPU for Jacobi: 113   
 
 # In order to find the optimization flags
 ./cycleThrough.sh
