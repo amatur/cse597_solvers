@@ -116,7 +116,6 @@ void swapRows(float* mat, int row1, int row2){
 void LUSolver(float ** A, float *B, int N, int eps, float *x){
 	clock_t lu_st, lu_et, lu_t;
 	
-	
 	//init L
 	//change A to U
 	
@@ -142,18 +141,11 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 			}
 		}
 		if (fabs(A[i_max][k]) < eps) return; //fail
-		//if (A[i_max][k] == 0){
-			// all zero in this column, so go to next column
-		//	k = k + 1;
+	
+	
 		if (fabs(A[i_max][k]) != k){
 			swapRows(A, k, i_max);
 			swapRows(B, k, i_max);
-			//int tmp = P[h];
-			//P[h] = P[i_max];
-			//P[i_max] = tmp;
-			
-			//P[m]++;
-			// for all below pivot
 			
 		}
 		for (int i = k + 1; i<N; i++){
@@ -224,7 +216,7 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 	lu_t = (double)(lu_et - lu_st);
 	printf("Total ticks taken by CPU for Backward Substitution: %ld\n", lu_t );
 	
-
+	free(L);
 }
 
 
@@ -281,7 +273,7 @@ void jacobiSolve ( int n, float **A, float *b, float epsilon, int maxit, int *nu
         for(i=0; i<n; i++) x[i] = y[i];
         
         // Print the residuals to the screen
-        printf("%4d\t%.3e\t%.3e\t%.3e \n",k,totSum,localSum,localInd);
+        //printf("%4d\t%.3e\t%.3e\t%.3e \n",k,totSum,localSum,localInd);
 
         // Break out if we reach our desired tolerance
         if(totSum <= epsilon) break;
@@ -388,7 +380,6 @@ void jacobi(float ** A, float * B, int m, int n, float *x, float eps, int maxit)
 int main(){
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// Set up the size of the matrix to be solved
-	//cout<<CLOCKS_PER_SEC<<endl;
 	//int n = 1;
 	int N;
 	//printf("Enter the rank of the matrix:\n");
@@ -509,14 +500,8 @@ int main(){
     
     lu_st = clock();
 	
-	
 	LUSolver(A, B, N, eps, X);
-	
-	//int *P = (int *)calloc( N, sizeof(int));
-	//LUPDecompose(A, N, eps, P);
-	//print(P, N);
-	//LUPSolve(A, P, B, N, X);
-	
+
 	lu_et = clock();
 	
 	lu_t = (double)(lu_et - lu_st);
@@ -524,26 +509,7 @@ int main(){
 	printf("Total ticks taken by CPU for LU Decomposition: %ld\n", lu_t );
 	
 	//print(X, N);
-	
-	
-	
-	
-	
-	
-    
-    //~ jacobi_start_t = clock();
-    //~ x
-	//~ jacobi(A, B, N, N, X, eps, maxit);
-	//~ jacobi_end_t = clock();
-	//~ jacobi_t = (double)(jacobi_end_t - jacobi_start_t);
-	
-	//~ printf("Total ticks taken by CPU for Jacobi Poisson: %ld\n", jacobi_t );
-	
-	//~ print(X, N);
-	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
-	
-	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
-	
+
     
     jacobi_start_t = clock();
 
@@ -557,13 +523,6 @@ int main(){
 	
 	//print(X, N);
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	return 0;
