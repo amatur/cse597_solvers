@@ -19,7 +19,7 @@ using namespace std;
 void storeMatrix(float **mat, int numRows, int numCols, string filename) {
 	int x, y;
 	ofstream out(filename);
-	
+
 	for (y = 0; y < numRows; y++) {
 		for (x = 0; x < numCols; x++) {
 			out << (int)mat[y][x] <<" ";
@@ -32,24 +32,24 @@ void storeMatrix(float **mat, int numRows, int numCols, string filename) {
 void loadMatrix(float **mat, int numRows, int numCols, string filename) {
 	int x, y;
 	ifstream in(filename);
-	
+
 	for (y = 0; y < numRows; y++) {
 		for (x = 0; x < numCols; x++) {
 			in >> mat[y][x];
 		}
 	}
-	
+
 	in.close();
 }
 
 void loadMatrix(float *mat, int numRows, string filename) {
 	int y;
 	ifstream in(filename);
-	
+
 	for (y = 0; y < numRows; y++) {
 			in >> mat[y];
 	}
-	
+
 	in.close();
 }
 
@@ -115,25 +115,25 @@ void swapRows(float* mat, int row1, int row2){
 
 void LUSolver(float ** A, float *B, int N, int eps, float *x){
 	double lu_st, lu_et, lu_t; timeval t1, t2;
-	
+
 	//init L
 	//change A to U
-	
+
 	gettimeofday(&t2, NULL); //lu_st = clock();
 	float **L = (float **)calloc( N, sizeof(float *));
-	
+
 	for(int i = 0; i < N; i++ )
 	{
 		L[i] = (float *)calloc( N, sizeof(float));
 		L[i][i] = 1;
 	}
-	
+
 	int k = 0; /* Initialization of the pivot column */
-	
+
 	for(k = 0; k < N; k++){
 		/* Find the k-th pivot: */
 		int i_max = k;
-		
+
 		// find the largest element of this column, iterate through all row
 		for(int i = k; i<N; i++){
 			if(fabs(A[i][k]) > fabs(A[i_max][k])){
@@ -141,81 +141,81 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 			}
 		}
 		if (fabs(A[i_max][k]) < eps) return; //fail
-	
-	
+
+
 		if (fabs(A[i_max][k]) != k){
 			swapRows(A, k, i_max);
 			swapRows(B, k, i_max);
-			
+
 		}
 		for (int i = k + 1; i<N; i++){
 			float f = A[i][k] / A[k][k];
 			L[i][k] = f;
 			A[i][k] = f;
-			
-			
+
+
 			for (int j = k + 1; j < N ; j++){
 				A[i][j] = A[i][j] - A[k][j] * f;
 			}
 		}
-		
-		
+
+
 	}
-	
+
 	gettimeofday(&t1, NULL); //lu_et = clock();
-	lu_t = t2.tv_sec - t1.tv_sec +(t2.tv_usec - t1.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
+	lu_t = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
 	printf("Total time(seconds) taken by CPU for LU Decomposition Only: %g\n", lu_t );
-	
+
 	for (int i=0; i<N; i++) {
 		for (int j=0; j<i; j++) {
 			A[i][j] = L[i][j];
 		}
 	}
-	
-	
+
+
 	//print(L, N, N);
 	//decomposition up to this part
-	
+
 	// now solving
-	
+
 	//Ly = B
-	
-	
-    
-    
+
+
+
+
     gettimeofday(&t2, NULL); //lu_st = clock();
-	
+
 	for (int i = 0; i < N; i++) {
 		x[i] = B[i];
-		
+
 		for (int k = 0; k < i; k++){
 			x[i] -= L[i][k] * x[k];
 		}
-			
+
 	}
-	
+
 	gettimeofday(&t1, NULL); // lu_et = clock();
-	lu_t = t2.tv_sec - t1.tv_sec +(t2.tv_usec - t1.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
+	lu_t = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
 	printf("Total time(seconds) taken by CPU for Forward Substitution: %g\n", lu_t );
-	
-	
+
+
 	gettimeofday(&t2, NULL); // lu_st = clock();
-	
+
 
 	//Ux = y
 	for (int i = N - 1; i >= 0; i--) {
 		for (int k = i + 1; k < N; k++){
 			x[i] -= A[i][k] * x[k];
 		}
-		
+
 		x[i] = x[i] / A[i][i];
 	}
-	
-	
+
+
 	gettimeofday(&t1, NULL); //lu_et = clock();
-	lu_t = t2.tv_sec - t1.tv_sec +(t2.tv_usec - t1.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
+	lu_t = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
 	printf("Total time(seconds) taken by CPU for Backward Substitution: %g\n", lu_t );
-	
+
 	free(L);
 }
 
@@ -234,7 +234,7 @@ void jacobiSolve ( int n, float **A, float *b, float epsilon, int maxit, int *nu
 		x[j] = (float)rand()/(float)(RAND_MAX)*1.0;
      }
 	//LUSolver(A, b, n, epsilon, x);
-	
+
 
     // Note that we go through to our max iterations
     for(k=0; k<maxit; k++)
@@ -247,11 +247,11 @@ void jacobiSolve ( int n, float **A, float *b, float epsilon, int maxit, int *nu
             dx[i] = b[i];
             for(j=0; j<n; j++)
             {
-                dx[i] -= A[i][j]*x[j]; 
+                dx[i] -= A[i][j]*x[j];
             }
             dx[i] /= A[i][i];
             y[i] += dx[i];
-            
+
             // Create a residual from part of the domain (when the indices  are 0, 5, 10, ...)
             if ( (i % 5) == 0)
             {
@@ -268,10 +268,10 @@ void jacobiSolve ( int n, float **A, float *b, float epsilon, int maxit, int *nu
             // Create a residual over all of the domain
             totSum += ( (dx[i] >= 0.0) ? dx[i] : -dx[i]);
         }
-       
+
         // Update x
         for(i=0; i<n; i++) x[i] = y[i];
-        
+
         // Print the residuals to the screen
         //printf("%4d\t%.3e\t%.3e\t%.3e \n",k,totSum,localSum,localInd);
 
@@ -291,7 +291,7 @@ void jacobiSolve ( int n, float **A, float *b, float epsilon, int maxit, int *nu
     //~ dx = (float*) calloc(n,sizeof(float));
     //~ y = (float*) calloc(n,sizeof(float));
     //~ int i,j,k;
-    
+
     //~ float ** U = (float**) calloc(n,sizeof(float *));
 	//~ for (int i = 0; i< n; i++){
 		//~ U[i] =(float*) calloc(n,sizeof(float));
@@ -310,16 +310,16 @@ void jacobiSolve ( int n, float **A, float *b, float epsilon, int maxit, int *nu
 				//~ if(i-1 >=0 && i+1 < n && j-1>=0 && j+1 < n){
 				  //~ U[i][j] =  ( U[i-1][j] + U[i+1][j] + U[i][j-1] + U[i][j+1] + b[i*n + j] )/4;
 			  //~ }
-               //~ // dx[i] -= A[i][j]*x[j]; 
+               //~ // dx[i] -= A[i][j]*x[j];
             //~ }
             //~ //dx[i] /= A[i][i];
             //~ //y[i] += dx[i];
-            
-            
-          
+
+
+
 
         //~ }
-       
+
 
         //~ // Break out if we reach our desired tolerance
         //~ //if(totSum <= epsilon) break;
@@ -327,7 +327,7 @@ void jacobiSolve ( int n, float **A, float *b, float epsilon, int maxit, int *nu
     //~ int t = 0;
     //~ for(int i=0; i<n; i++) {
 			//~ for(j=0; j<n; j++) {
-				//~ x[t++] = U[i][j]; 
+				//~ x[t++] = U[i][j];
 			//~ }
 		//~ }
     //~ //*numit = k+1;
@@ -341,10 +341,10 @@ void jacobiSolve ( int n, float **A, float *b, float epsilon, int maxit, int *nu
 void jacobi(float ** A, float * B, int m, int n, float *x, float eps, int maxit){
 	memset(x, 0, n*sizeof(*x)); //init guess
 	float* sigma = (float*) calloc(n,sizeof(float));
-	
+
 	float *C = (float *) malloc( n * sizeof(float));
 	int it = 0;
-	
+
 	int k = 0;
 	do{
 		it++;
@@ -353,25 +353,25 @@ void jacobi(float ** A, float * B, int m, int n, float *x, float eps, int maxit)
 			for (int j = 0; j < n; j++) {
 				//if(j!=1){
 					sigma[i] -= A[i][j] * x[j];
-					
+
 				//}
 			}
 			sigma[i] /= A[i][i];
-			
+
 			x[i] += sigma[i];
 		}
 		k = k + 1;
 		//print(x, n);
 		//printf("%f", getError(A, B, C, x, n));
-		
+
 		if(getError(A, B, C, x, n)<=eps || it >= maxit){
 			break;
 		}
-		
-		
+
+
 	}while(true);
-	
-	
+
+
 }
 
 
@@ -385,11 +385,11 @@ int main(){
 	//printf("Enter the rank of the matrix:\n");
 	//scanf("%d",&n);
 	N = 90;
-	
-	
+
+
 	int i;
 	//init matrix
-	
+
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// Set up the Ax=b and random variables
 	float **A, **A2;
@@ -398,30 +398,30 @@ int main(){
 	srand(0);
 
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
-	// Allocate memory for A matrix 
-	
+	// Allocate memory for A matrix
+
 	A = (float**) calloc(N,sizeof(float*));
 	A2 = (float**) calloc(N,sizeof(float*));
     for(i =0; i <N; i++){
 		A[i] = (float*) calloc(N,sizeof(float));
 		A2[i] = (float*) calloc(N,sizeof(float));
-		
+
 	}
 	B = (float*) calloc(N,sizeof(float));
 	B2 = (float*) calloc(N,sizeof(float));
 	X = (float*) calloc(N,sizeof(float));
-        
+
     // Randomly Initialize the A matrix
 	//~ int countA,countB;
-	//~ for (countA=0; countA<N; countA++) 
+	//~ for (countA=0; countA<N; countA++)
 	//~ {
-		//~ for (countB=0; countB<N; countB++) 
+		//~ for (countB=0; countB<N; countB++)
 		//~ {
 			//~ A[countA][countB]=(float)rand()/(float)(RAND_MAX)*1.0;
-	
+
 		//~ }
 	//~ }
-	   
+
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// fill up A matrix - Poisson finite diff
 	for (int i = 0; i < N; i++) {
@@ -433,7 +433,7 @@ int main(){
 			}
 		}
 	}
-	
+
 
 
 //~ for (int i = 0; i < N; i++) {
@@ -461,69 +461,69 @@ int main(){
 	//~ }
 //~ }
 	//print(A, N, N);
-	
-	
+
+
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
-	// fill up B matrix 
+	// fill up B matrix
 	//loadMatrix(B, N, "mat.txt");
-	
+
 	for(int i =0; i<N; i++)
     {
         B[i] = (float)rand()/(float)(RAND_MAX)*1.0;
         B2[i] = B[i];
     }
-	
-	
-	
+
+
+
 	// fill up B matrix
 	 //~ for(i =0; i<N; i++)
     //~ {
         //~ B[i] = 2.0*N;
     //~ }
-    
-    
-    
+
+
+
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// Set our tolerance and maximum iterations
     float eps = 1.0e-4;
     int maxit = 2*N*N;
-    
+
     //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	//print(A, N, N);
 	//print(B, N);
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
-	
-	
-	
+
+
+
 	double jacobi_start_t, jacobi_end_t, jacobi_t, lu_st, lu_et, lu_t; timeval t1, t2;
-    
-    
+
+
     gettimeofday(&t2, NULL); // lu_st = clock();
-	
+
 	LUSolver(A, B, N, eps, X);
 
 	gettimeofday(&t1, NULL); //lu_et = clock();
-	
-	lu_t = t2.tv_sec - t1.tv_sec +(t2.tv_usec - t1.tv_usec) / 1.0e6;//lu_t = (double)(lu_et - lu_st);
-	
+
+	lu_t = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) / 1.0e6;//lu_t = (double)(lu_et - lu_st);
+
 	printf("Total time taken by CPU for LU Decomposition: %g\n", lu_t );
-	
+
 	//print(X, N);
 
-    
+
     gettimeofday(&t2, NULL); //jacobi_start_t = clock();
 
 	int cnt;
     jacobiSolve(N, A, B, eps, maxit, &cnt, X);
 	//jacobi(A, B, N, N, X, eps, maxit);
 	gettimeofday(&t1, NULL); //jacobi_end_t = clock();
-	jacobi_t = t2.tv_sec - t1.tv_sec +(t2.tv_usec - t1.tv_usec) / 1.0e6; //jacobi_t = (double)(jacobi_end_t - jacobi_start_t);
-	
+	jacobi_t = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) / 1.0e6; //jacobi_t = (double)(jacobi_end_t - jacobi_start_t);
+
 	printf("Total time(seconds) taken by CPU for Jacobi: %g\n", jacobi_t );
-	
+
 	//print(X, N);
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
-	
-	
+
+
 	return 0;
 }
