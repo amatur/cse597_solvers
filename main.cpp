@@ -4,7 +4,7 @@
 //  Created by Amatur Rahman on 19/9/18.
 //  Copyright © 2018 psu. All rights reserved.
 //
-
+#include<sys/time.h>
 #include <stdio.h>
 #include<cstdlib>
 #include <cstring>
@@ -114,12 +114,12 @@ void swapRows(float* mat, int row1, int row2){
 }
 
 void LUSolver(float ** A, float *B, int N, int eps, float *x){
-	clock_t lu_st, lu_et, lu_t;
+	double lu_st, lu_et, lu_t; timeval t1, t2;
 	
 	//init L
 	//change A to U
 	
-	lu_st = clock();
+	gettimeofday(&t2, NULL); //lu_st = clock();
 	float **L = (float **)calloc( N, sizeof(float *));
 	
 	for(int i = 0; i < N; i++ )
@@ -162,9 +162,9 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 		
 	}
 	
-	lu_et = clock();
-	lu_t = (double)(lu_et - lu_st);
-	printf("Total ticks taken by CPU for LU Decomposition Only: %ld\n", lu_t );
+	gettimeofday(&t1, NULL); //lu_et = clock();
+	lu_t = t2.tv_sec - t1.tv_sec +(t2.tv_usec - t1.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
+	printf("Total time(seconds) taken by CPU for LU Decomposition Only: %g\n", lu_t );
 	
 	for (int i=0; i<N; i++) {
 		for (int j=0; j<i; j++) {
@@ -183,7 +183,7 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 	
     
     
-    lu_st = clock();
+    gettimeofday(&t2, NULL); //lu_st = clock();
 	
 	for (int i = 0; i < N; i++) {
 		x[i] = B[i];
@@ -194,12 +194,12 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 			
 	}
 	
-	lu_et = clock();
-	lu_t = (double)(lu_et - lu_st);
-	printf("Total ticks taken by CPU for Forward Substitution: %ld\n", lu_t );
+	gettimeofday(&t1, NULL); // lu_et = clock();
+	lu_t = t2.tv_sec - t1.tv_sec +(t2.tv_usec - t1.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
+	printf("Total time(seconds) taken by CPU for Forward Substitution: %g\n", lu_t );
 	
 	
-	lu_st = clock();
+	gettimeofday(&t2, NULL); // lu_st = clock();
 	
 
 	//Ux = y
@@ -212,9 +212,9 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 	}
 	
 	
-	lu_et = clock();
-	lu_t = (double)(lu_et - lu_st);
-	printf("Total ticks taken by CPU for Backward Substitution: %ld\n", lu_t );
+	gettimeofday(&t1, NULL); //lu_et = clock();
+	lu_t = t2.tv_sec - t1.tv_sec +(t2.tv_usec - t1.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
+	printf("Total time(seconds) taken by CPU for Backward Substitution: %g\n", lu_t );
 	
 	free(L);
 }
@@ -495,31 +495,31 @@ int main(){
 	
 	
 	
-	clock_t jacobi_start_t, jacobi_end_t, jacobi_t, lu_st, lu_et, lu_t;
+	double jacobi_start_t, jacobi_end_t, jacobi_t, lu_st, lu_et, lu_t; timeval t1, t2;
     
     
-    lu_st = clock();
+    gettimeofday(&t2, NULL); // lu_st = clock();
 	
 	LUSolver(A, B, N, eps, X);
 
-	lu_et = clock();
+	gettimeofday(&t1, NULL); //lu_et = clock();
 	
-	lu_t = (double)(lu_et - lu_st);
+	lu_t = t2.tv_sec - t1.tv_sec +(t2.tv_usec - t1.tv_usec) / 1.0e6;//lu_t = (double)(lu_et - lu_st);
 	
-	printf("Total ticks taken by CPU for LU Decomposition: %ld\n", lu_t );
+	printf("Total time taken by CPU for LU Decomposition: %g\n", lu_t );
 	
 	//print(X, N);
 
     
-    jacobi_start_t = clock();
+    gettimeofday(&t2, NULL); //jacobi_start_t = clock();
 
 	int cnt;
     jacobiSolve(N, A, B, eps, maxit, &cnt, X);
 	//jacobi(A, B, N, N, X, eps, maxit);
-	jacobi_end_t = clock();
-	jacobi_t = (double)(jacobi_end_t - jacobi_start_t);
+	gettimeofday(&t1, NULL); //jacobi_end_t = clock();
+	jacobi_t = t2.tv_sec - t1.tv_sec +(t2.tv_usec - t1.tv_usec) / 1.0e6; //jacobi_t = (double)(jacobi_end_t - jacobi_start_t);
 	
-	printf("Total ticks taken by CPU for Jacobi: %ld\n", jacobi_t );
+	printf("Total time(seconds) taken by CPU for Jacobi: %g\n", jacobi_t );
 	
 	//print(X, N);
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
