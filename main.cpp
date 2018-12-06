@@ -163,7 +163,7 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 	}
 
 	gettimeofday(&t1, NULL); //lu_et = clock();
-	lu_t = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
+	lu_t = t1.tv_sec - t2.tv_sec +(t1.tv_usec - t2.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
 	printf("Total time(seconds) taken by CPU for LU Decomposition Only: %g\n", lu_t );
 
 	for (int i=0; i<N; i++) {
@@ -195,7 +195,7 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 	}
 
 	gettimeofday(&t1, NULL); // lu_et = clock();
-	lu_t = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
+	lu_t = t1.tv_sec - t2.tv_sec +(t1.tv_usec - t2.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
 	printf("Total time(seconds) taken by CPU for Forward Substitution: %g\n", lu_t );
 
 
@@ -213,7 +213,7 @@ void LUSolver(float ** A, float *B, int N, int eps, float *x){
 
 
 	gettimeofday(&t1, NULL); //lu_et = clock();
-	lu_t = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
+	lu_t = t1.tv_sec - t2.tv_sec +(t1.tv_usec - t2.tv_usec) / 1.0e6; //lu_t = (double)(lu_et - lu_st);
 	printf("Total time(seconds) taken by CPU for Backward Substitution: %g\n", lu_t );
 
 	free(L);
@@ -504,7 +504,7 @@ int main(){
 
 	gettimeofday(&t1, NULL); //lu_et = clock();
 
-	lu_t = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) / 1.0e6;//lu_t = (double)(lu_et - lu_st);
+	lu_t = t1.tv_sec - t2.tv_sec +(t1.tv_usec - t2.tv_usec) / 1.0e6;//lu_t = (double)(lu_et - lu_st);
 
 	printf("Total time taken by CPU for LU Decomposition: %g\n", lu_t );
 
@@ -517,7 +517,7 @@ int main(){
     jacobiSolve(N, A, B, eps, maxit, &cnt, X);
 	//jacobi(A, B, N, N, X, eps, maxit);
 	gettimeofday(&t1, NULL); //jacobi_end_t = clock();
-	jacobi_t = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) / 1.0e6; //jacobi_t = (double)(jacobi_end_t - jacobi_start_t);
+	jacobi_t = t1.tv_sec - t2.tv_sec +(t1.tv_usec - t2.tv_usec) / 1.0e6; //jacobi_t = (double)(jacobi_end_t - jacobi_start_t);
 
 	printf("Total time(seconds) taken by CPU for Jacobi: %g\n", jacobi_t );
 
