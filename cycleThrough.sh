@@ -16,10 +16,9 @@ do
     echo $flagVals
 
     # Compile the code
-    g++ -$flagVals main.cpp
+    g++ -$flagVals main.cpp -o main.out
 
     # Run it a lot for testing purposes
-    for fcount in $(seq 10); do TIMEFORMAT='%3R'; time  ./a.out a 1 ; done
+    for fcount in $(seq 10); do TIMEFORMAT='%3R'; time  ./main.out 20 a 1 ; done
 
 done
-
