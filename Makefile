@@ -15,7 +15,7 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm *o main.out main.o
+	rm -f *.o main.out
 
-runcu:
+run:
 		echo "## Running main.out"; ./main.out 90 \
