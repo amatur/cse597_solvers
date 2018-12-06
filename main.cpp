@@ -377,7 +377,7 @@ void jacobi(float ** A, float * B, int m, int n, float *x, float eps, int maxit)
 
 
 
-int main(){
+int main(int argc, char* argv[]){
 	//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-//
 	// Set up the size of the matrix to be solved
 	//int n = 1;
