@@ -384,7 +384,7 @@ int main(){
 	int N;
 	//printf("Enter the rank of the matrix:\n");
 	//scanf("%d",&n);
-	N = 90;
+	N = strtol(argv[1], NULL, 10);	//input from command line
 
 
 	int i;
@@ -506,7 +506,7 @@ int main(){
 
 	lu_t = t1.tv_sec - t2.tv_sec +(t1.tv_usec - t2.tv_usec) / 1.0e6;//lu_t = (double)(lu_et - lu_st);
 
-	printf("Total time taken by CPU for LU Decomposition: %g\n", lu_t );
+	printf("Total time(seconds) taken by CPU for LU Decomposition: %g\n", lu_t );
 
 	//print(X, N);
 

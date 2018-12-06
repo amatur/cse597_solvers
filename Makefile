@@ -7,12 +7,15 @@ OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=main.out
 
 all: $(SOURCES) $(EXECUTABLE)
-    
-$(EXECUTABLE): $(OBJECTS) 
+
+$(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm *o main.out
+	rm *o main.out main.o
+
+runcu:
+		echo "## Running main.out"; ./main.out 90 \
